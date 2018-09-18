@@ -10,6 +10,8 @@ module.exports = (req, res) => {
     const key  = process.env.GITHUB_HOOK_SECRET;
     const hash = "sha1=" + crypto.createHmac('sha1', key).update(JSON.stringify(req.body)).digest('hex');
 
+    console.log(sign, key, hash);
+
     if(hash !== sign) {
         logger.info("Unable to pull, hash and signature do not match", { hash: hash, signature: sign });
         return res.send("KO");
