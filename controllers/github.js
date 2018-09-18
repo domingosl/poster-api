@@ -25,22 +25,6 @@ module.exports = (req, res) => {
 
         logger.info("Pull completed", response.summary);
 
-        const exec = child_process.exec;
-        const options = {
-            timeout: 60000,
-            killSignal: 'SIGKILL'
-        };
-
-        exec('grunt build', options, function(err, stdout, stderr) {
-
-            if (err)
-                logger.error('Child process exited with error. %o', { error: err });
-            else
-                logger.info('Grunt build done!');
-
-        });
-
-
     });
 
 };
