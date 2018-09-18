@@ -1,0 +1,11 @@
+body {
+    background-color: white;
+}
+
+.jumbotron {
+    text-align: center;
+}
+
+.jumbotron ion-icon {
+    font-size: 64px;
+}
