@@ -2,6 +2,7 @@ const crypto                = require('crypto');
 const process               = require('process');
 const github                = require('simple-git')();
 const logger                = require('../util/logger');
+const child_process         = require('child_process');
 
 module.exports = (req, res) => {
 
@@ -23,6 +24,22 @@ module.exports = (req, res) => {
             throw err;
 
         logger.info("Pull completed", response.summary);
+
+        const exec = child_process.exec;
+        const options = {
+            timeout: 60000,
+            killSignal: 'SIGKILL'
+        };
+
+        exec('pm2 reload server', options, function(err, stdout, stderr) {
+
+            if (err)
+                logger.error('Child process exited with error. %o', { error: err });
+            else
+                logger.info('Server reload done!');
+
+        });
+
 
     });
 
