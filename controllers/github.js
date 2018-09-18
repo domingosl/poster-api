@@ -31,7 +31,7 @@ module.exports = (req, res) => {
             killSignal: 'SIGKILL'
         };
 
-        exec('pm2 reload server', options, function(err, stdout, stderr) {
+        exec('pm2 reload server.js', options, function(err, stdout, stderr) {
 
             if (err)
                 logger.error('Child process exited with error. %o', { error: err });
