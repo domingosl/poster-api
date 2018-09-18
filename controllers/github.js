@@ -1,4 +1,5 @@
 const crypto                = require('crypto');
+const process               = require('process');
 const github                = require('simple-git')();
 const logger                = require('../util/logger');
 const child_process         = require('child_process');
