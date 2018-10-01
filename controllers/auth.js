@@ -13,9 +13,17 @@ module.exports.signup = (req, res) => {
             return res.status(500).send(err);
         }
 
-        postman.newSender.setTemplate('user-welcome').setData({}).sendEmail(user.email);
+        req.locals.asset.refreshToken().then(
+            function success(token) {
+                postman.newSender.setTemplate('user-welcome').setData({}).sendEmail(user.email);
+                return res.resolve({token: token});
+            },
+            function error() {
+                return res.applicationError();
+            }
+        );
 
-        return res.resolve(user.getSession());
+
     });
 
 };
@@ -40,11 +48,18 @@ module.exports.login = (req, res) => {
 
             user.verifyPassword(req.body.password, (err, valid) => {
 
-                if(valid)
-                    return user.refreshToken((session) => res.resolve(user.getSession()));
+                if(!valid)
+                    return res.forbidden(i18n.__("WRONG_CREDENTIALS"));
 
+                user.refreshToken().then(
+                    function success(token) {
+                        res.resolve({token: token, user: user.userRelevantData() });
+                    },
+                    function error(err) {
+                        res.applicationError();
+                    }
+                );
 
-                return res.forbidden(i18n.__("WRONG_CREDENTIALS"));
 
             });
 
@@ -53,6 +68,26 @@ module.exports.login = (req, res) => {
             logger.error("Can't find User in DB for authentication. %o", err);
             res.applicationError();
         });
+
+};
+
+module.exports.logout = (req, res) => {
+
+    if(!req.locals.user)
+        return res.forbidden("");
+
+    User.findById(req.locals.user.id)
+        .then((user) => {
+            user.hashToken = null;
+            return user.save();
+        })
+        .then(() => {
+            return res.resolve();
+        })
+        .catch((err) => {
+            logger.error("Fail at requesting/saving User from DB for logout. %o", err);
+            return res.applicationError();
+        })
 
 };
 
@@ -76,6 +111,7 @@ module.exports.restorePassword = (req, res) => {
 
             const newPassword = require('password-generator')(12);
             resetPassword.user.password = newPassword;
+            resetPassword.user.token = null;
             resetPassword.user.save().then(() => {
                 resetPassword.used = true;
                 return resetPassword.save();
@@ -147,6 +183,50 @@ module.exports.resetPassword = (req, res) => {
             logger.error("Can't find User in DB for password reset. %o", err);
             res.applicationError();
         });
+
+
+};
+
+module.exports.changePassword = (req, res) => {
+
+    User.findById(req.locals.user.id).then((user) => {
+
+        user.verifyPassword(req.body.currentPassword || "", (err, valid) => {
+
+            if (!valid)
+                return res.badRequest({
+                    currentPassword: i18n.__('WRONG_CURRENT_PASSWORD')
+                });
+
+
+            user.password = req.body.password;
+
+            user.save((err, user)=> {
+
+                if(err && err.name !== 'ValidationError') {
+                    logger.error("Error while saving user during password change. %o", err);
+                    return res.applicationError();
+                }
+
+                else if(err && err.name === 'ValidationError') {
+                    let result = {};
+                    Object.keys(err.errors).map(fieldName => {
+                        result[fieldName] = err.errors[fieldName].message;
+                    });
+
+                    return res.badRequest(result);
+                }
+
+                return res.resolve({ token: user.jwt });
+
+            });
+
+        });
+
+    }).catch((err) => {
+        logger.error("Can't request user for password change. %o", err);
+        return res.applicationError();
+    });
 
 
 };

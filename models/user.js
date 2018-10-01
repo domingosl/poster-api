@@ -4,11 +4,14 @@ const timestamps = require('mongoose-timestamp');
 const mongooseStringQuery = require('mongoose-string-query');
 const validator = require('validator');
 const uniqueValidator = require('mongoose-unique-validator');
-const jwt = require('jsonwebtoken');
 const process = require('process');
+const uuid = require('uuid/v1');
+const crypto = require('crypto');
 
 const logger = require('../util/logger');
 
+const passwordMin = 8;
+const passwordMax = 60;
 const firstNameMin = 2;
 const firstNameMax = 80;
 const lastNameMin = 2;
@@ -27,6 +30,8 @@ const UserSchema = new mongoose.Schema(
         },
         password: {
             type: String,
+            minlength: [passwordMin, i18n.__('FORM_ERROR_PASSWORD_TOO_SHORT', passwordMin)],
+            maxlength: [passwordMax, i18n.__('FORM_ERROR_PASSWORD_TOO_LONG', passwordMax)],
             required: [true, i18n.__('FORM_ERROR_INVALID_PASSWORD')],
             bcrypt: true
         },
@@ -49,7 +54,7 @@ const UserSchema = new mongoose.Schema(
             trim: true,
             default: ''
         },
-        jwt: {
+        hashToken: {
             type: String,
             trim: true,
             default: ''
@@ -69,7 +74,7 @@ const UserSchema = new mongoose.Schema(
 UserSchema.methods.getSession = function () {
     return {
         user: this.userRelevantData(),
-        jwt: this.jwt
+        hashToken: this.hashToken
     }
 };
 
@@ -82,23 +87,35 @@ UserSchema.methods.userRelevantData = function () {
     };
 };
 
-UserSchema.methods.refreshToken = function (cb) {
+const hash = (t) => crypto.createHash('sha512').update(t).digest('hex');
+
+UserSchema.statics.hash = (t)  => hash(t);
+
+UserSchema.methods.refreshToken = function () {
 
     const me = this;
 
-    jwt.sign({ data: this.userRelevantData() }, process.env.JWT_SECRET, { expiresIn: 3600 * 24 * 30 } , function(err, token) {
-        me.jwt = token;
-        if(typeof cb === 'function') cb();
+    return new Promise((resolve, reject)=> {
+
+        let newToken = uuid() + "-" + this._id;
+
+        this.hashToken = hash(newToken);
+
+        me.save((err, user)=> {
+
+            if(err) {
+                logger.error("Can't save user after updating token. %o", err);
+                return reject(err);
+            }
+
+            resolve(newToken);
+
+        });
     });
 
-};
 
-UserSchema.pre('save', function (next) {
-    if(this.isNew)
-        this.refreshToken(next);
-    else
-        next();
-});
+
+};
 
 UserSchema.plugin(bcrypt);
 UserSchema.plugin(timestamps);

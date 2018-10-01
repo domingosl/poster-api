@@ -1,5 +1,7 @@
 module.exports = (req, res, next) => {
 
+    if(!req.locals)
+        req.locals = {};
 
     function getForm(code, payload, message) {
 

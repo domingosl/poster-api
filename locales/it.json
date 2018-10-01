@@ -6,6 +6,8 @@
 	"FORM_ERROR_FIRST_NAME_MISSING": "Devi indicare il tuo nome",
 	"FORM_ERROR_LAST_NAME_TOO_SHORT": "Il tuo cognome deve contenere al meno %s lettere",
 	"FORM_ERROR_LAST_NAME_TOO_LONG": "Il tuo cognome deve contenere meno di %s lettere",
+    "FORM_ERROR_PASSWORD_TOO_SHORT": "La tua password deve contenere al meno %s caratteri",
+	"FORM_ERROR_PASSWORD_TOO_LONG": "La tua password deve contenere meno di %s caratteri",
 	"FORM_ERROR_LAST_NAME_MISSING": "Devi indicare il tuo cognome",
 	"FORM_ERROR_EMAIL_IN_USE": "Questa email è già registrata",
 	"FORM_ERROR_INVALID_PASSWORD": "Password non valida.",
@@ -20,5 +22,6 @@
 	"VALID_RESET_TITLE": "Recupero password autorizzato",
 	"VALID_RESET": "Ti abbiamo appena inviato una mail a <strong>%s</strong> con la tua nuova password.",
 	"UNAUTHORISED_API_CALL": "UNAUTHORISED_API_CALL",
-    "TOO_MANY_REQUESTS": "Troppe richieste, si prega di riprovare %s."
+    "TOO_MANY_REQUESTS": "Troppe richieste, si prega di riprovare %s.",
+	"WRONG_CURRENT_PASSWORD": "Non coincide con la password corrente"
 }

@@ -2,8 +2,6 @@ const logger = require('../util/logger');
 
 module.exports = (req,res,next) => {
 
-    req.locals = {};
-
     let AssetModel;
 
     if(req.path === '/auth/signup') {
@@ -24,8 +22,10 @@ module.exports = (req,res,next) => {
             return next();
         }
 
-        if(err.name !== 'ValidationError')
+        if(err.name !== 'ValidationError') {
+            logger.error("Error while validating asset in validation middleware. %o", err);
             return res.applicationError();
+        }
 
         let result = {};
         Object.keys(err.errors).map(fieldName => {

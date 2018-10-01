@@ -33,7 +33,7 @@ app.get('/favicon.ico', (req, res) => res.status(204));
 
 app.use(mainMiddleware);
 
-app.use(require('./config/jwt'));
+app.use(require('./util/auth'));
 app.use(validationMiddleware);
 
 fs.readdirSync(`${appRoot}/routes`).map(file => {
