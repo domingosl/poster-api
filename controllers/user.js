@@ -44,7 +44,7 @@ module.exports.update = (req, res) => {
     }
 
 
-    User.findByIdAndUpdate({ _id: req.params.userId }, data, { new: true })
+    User.findByIdAndUpdate({ _id: req.locals.user._id }, data, { new: true })
         .then(user => {
             if (!user) {
                 return res.sendStatus(404);

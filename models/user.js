@@ -4,7 +4,6 @@ const timestamps = require('mongoose-timestamp');
 const mongooseStringQuery = require('mongoose-string-query');
 const validator = require('validator');
 const uniqueValidator = require('mongoose-unique-validator');
-const process = require('process');
 const uuid = require('uuid/v1');
 const crypto = require('crypto');
 

@@ -9,7 +9,7 @@ module.exports.signup = (req, res) => {
     req.locals.asset.save((err, user) => {
 
         if(err) {
-            logger.error("Can't save asset to DB %o", err);
+            logger.error("Can't save asset to DB. %o", err);
             return res.status(500).send(err);
         }
 

@@ -7,6 +7,9 @@ module.exports = (req,res,next) => {
     if(req.path === '/auth/signup') {
         AssetModel = require('../models/user');
     }
+    else if(req.path === '/recipients' && (req.method === 'POST' || req.method === 'PUT')) {
+        AssetModel = require('../models/recipient');
+    }
     else {
         logger.debug("Validation skipped");
         return next();

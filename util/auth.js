@@ -10,7 +10,7 @@ const mw = (req, res, next) => {
     let token = req.headers['x-auth-token'];
 
     if(typeof token !== 'string' || token === "")
-        return res.unauthorized();
+        return res.forbidden();
 
     token = Users.hash(token);
 
