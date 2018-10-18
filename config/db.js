@@ -22,8 +22,8 @@ connection
             logger.info('Attempting to re-establish database connection.');
             mongoose.connect(process.env.DB_SERVER);
         } else {
-            logger.error('Error while attempting to connect to database:');
-            logger.error(err);
+            logger.error('Error while attempting to connect to database.');
+            process.exit();
         }
     });
 

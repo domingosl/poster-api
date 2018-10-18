@@ -58,6 +58,28 @@ const UserSchema = new mongoose.Schema(
             trim: true,
             default: ''
         },
+        address: {
+            type: String,
+            trim: true,
+            minlength: [lastNameMin, i18n.__('FORM_ERROR_ADDRESS_TOO_SHORT', 3)],
+            maxlength: [lastNameMax, i18n.__('FORM_ERROR_ADDRESS_TOO_LONG', 120)],
+            required: false
+        },
+        addressRegion: {
+            type: String,
+            trim: true,
+            minlength: [lastNameMin, i18n.__('FORM_ERROR_ADDRESS_REGION_TOO_SHORT', 2)],
+            maxlength: [lastNameMax, i18n.__('FORM_ERROR_ADDRESS_REGION_TOO_LONG', 30)],
+            required: false
+        },
+        addressCode: {
+            type: String,
+            trim: true,
+            minlength: [lastNameMin, i18n.__('FORM_ERROR_ADDRESS_CODE_TOO_SHORT', 2)],
+            maxlength: [lastNameMax, i18n.__('FORM_ERROR_ADDRESS_CODE_TOO_LONG', 6)],
+            required: false
+        },
+
         active: {
             type: Boolean,
             default: true
@@ -67,7 +89,7 @@ const UserSchema = new mongoose.Schema(
             default: false
         }
     },
-    { collection: 'users' }
+    {collection: 'users'}
 );
 
 UserSchema.methods.getSession = function () {
@@ -88,21 +110,21 @@ UserSchema.methods.userRelevantData = function () {
 
 const hash = (t) => crypto.createHash('sha512').update(t).digest('hex');
 
-UserSchema.statics.hash = (t)  => hash(t);
+UserSchema.statics.hash = (t) => hash(t);
 
 UserSchema.methods.refreshToken = function () {
 
     const me = this;
 
-    return new Promise((resolve, reject)=> {
+    return new Promise((resolve, reject) => {
 
         let newToken = uuid() + "-" + this._id;
 
         this.hashToken = hash(newToken);
 
-        me.save((err, user)=> {
+        me.save((err, user) => {
 
-            if(err) {
+            if (err) {
                 logger.error("Can't save user after updating token. %o", err);
                 return reject(err);
             }
@@ -113,14 +135,13 @@ UserSchema.methods.refreshToken = function () {
     });
 
 
-
 };
 
 UserSchema.plugin(bcrypt);
 UserSchema.plugin(timestamps);
 UserSchema.plugin(mongooseStringQuery);
-UserSchema.plugin(uniqueValidator, { message: i18n.__('FORM_ERROR_EMAIL_IN_USE') });
+UserSchema.plugin(uniqueValidator, {message: i18n.__('FORM_ERROR_EMAIL_IN_USE')});
 
-UserSchema.index({ email: 1 });
+UserSchema.index({email: 1});
 
 module.exports = exports = mongoose.model('User', UserSchema);
