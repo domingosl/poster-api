@@ -4,5 +4,6 @@ module.exports = [
     '/auth/login',
     /\/auth\/restore-password\/*/,
     '/auth/reset-password',
-    '/githook'
+    '/githook',
+    '/message-image'
 ];

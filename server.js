@@ -13,6 +13,7 @@ const cors              = require('cors');
 const compression       = require('compression');
 const bodyParser        = require('body-parser');
 const expressLayouts    = require('express-ejs-layouts');
+const expressFileUpload = require('express-fileupload');
 
 
 const mainMiddleware = require('./middlewares/main');
@@ -26,6 +27,7 @@ app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.use(expressLayouts);
 app.use(cors());
+app.use(expressFileUpload());
 app.use(compression());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
