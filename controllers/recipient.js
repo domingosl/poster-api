@@ -36,7 +36,7 @@ module.exports.save = (req, res) => {
 
         if (err) {
             logger.error("Can't save asset to DB. %o", err);
-            return res.status(500).send(err);
+            return res.status(500).send();
         }
 
         return res.resolve(recipient);
