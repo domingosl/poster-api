@@ -5,7 +5,7 @@ const unless = require('express-unless');
 
 const mw = (req, res, next) => {
 
-    logger.debug("Running auth middleware on %o", req.originalUrl, req.originalUrl);
+    logger.debug("Running auth middleware on %o", req.originalUrl);
 
     let token = req.headers['x-auth-token'];
 

@@ -15,7 +15,7 @@ const ResetPasswordSchema = new mongoose.Schema(
         },
         expirationDate: {
             type: Date,
-            default: moment().add(600, 'seconds')
+            default: moment().add(600, 's')
         }
     },
     { collection: 'passwordReset' }
@@ -25,4 +25,4 @@ ResetPasswordSchema.plugin(timestamps);
 ResetPasswordSchema.plugin(mongooseStringQuery);
 
 
-module.exports = exports = mongoose.model('resetPassword', ResetPasswordSchema);
+module.exports = exports = mongoose.model('ResetPassword', ResetPasswordSchema);

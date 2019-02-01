@@ -1,20 +1,28 @@
-const mongoose = require('mongoose');
-const timestamps = require('mongoose-timestamp');
-const mongooseStringQuery = require('mongoose-string-query');
+const mongoose              = require('mongoose');
+const moment                = require('moment');
+const timestamps            = require('mongoose-timestamp');
+const mongooseStringQuery   = require('mongoose-string-query');
 
-const bodyMin = 1;
+const bodyMin = 0;
 const bodyMax = 5000;
 const subjectMax = 250;
 
 const attachmentSchema = new mongoose.Schema({
     url: {
         type: String,
-        minlength: [2, i18n.__('URL_TOO_SHORT', 2)],
-        maxlength: [400, i18n.__('URL_TOO_LONG', 400)],
-        required: [true, i18n.__('BODY_MISSING')]
+        minlength: 5,
+        maxlength: 400,
+        required: true
     },
-    id: {
-        type: String
+    showName: {
+        type: String,
+        minlength: 1,
+        maxlength: 400,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: moment()
     }
 });
 
@@ -38,12 +46,12 @@ const MessagesSchema = new mongoose.Schema(
             type: String,
             minlength: [bodyMin, i18n.__('BODY_TOO_SHORT', bodyMin)],
             maxlength: [bodyMax, i18n.__('BODY_TOO_LONG', bodyMax)],
-            required: [true, i18n.__('BODY_MISSING')]
+            required: false
         },
         status: {
             type: Number,
             trim: true,
-            default: 2 //<-- 0: deleted, 1: send, 2: draft
+            default: 2 //<-- 0: deleted, 1: sent, 2: draft, 3: ready for send
         },
         attachments: [attachmentSchema]
 
@@ -55,4 +63,4 @@ MessagesSchema.plugin(timestamps);
 MessagesSchema.plugin(mongooseStringQuery);
 
 
-module.exports = exports = mongoose.model('message', MessagesSchema);
+module.exports = mongoose.model('Message', MessagesSchema);

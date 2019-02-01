@@ -1,0 +1,27 @@
+const errorManager = (err, next) => {
+
+    if (err.name === 'ValidationError') {
+        let result = {};
+        Object.keys(err.errors).map(fieldName => {
+            result[fieldName] = err.errors[fieldName].message;
+        });
+
+        return next({name: 'ValidationError' , data: result });
+    } else {
+        return next(err);
+    }
+
+};
+
+module.exports = (schema) => {
+
+
+    schema.post('save', function(error, doc, next) {
+        errorManager(error, next);
+    });
+
+    schema.post('findOneAndUpdate', function(error, doc, next) {
+        errorManager(error, next);
+    });
+
+};

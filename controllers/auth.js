@@ -6,20 +6,21 @@ const validator = require('validator');
 
 module.exports.signup = (req, res) => {
 
-    req.locals.asset.save((err, user) => {
+    let user = new User(req.body);
 
-        if(err) {
-            logger.error("Can't save asset to DB. %o", err);
-            return res.status(500).send();
-        }
+    user.save((err, user) => {
 
-        req.locals.asset.refreshToken().then(
+        if(err)
+            return res.apiErrorResponse(err);
+
+
+        user.refreshToken().then(
             function success(token) {
                 postman.newSender.setTemplate('user-welcome').setData({}).sendEmail(user.email);
-                return res.resolve({token: token});
+                return res.resolve({token: token, user: user.relevantData()});
             },
-            function error() {
-                return res.applicationError();
+            function error(err) {
+                return res.apiErrorResponse(err);
             }
         );
 
@@ -53,10 +54,10 @@ module.exports.login = (req, res) => {
 
                 user.refreshToken().then(
                     function success(token) {
-                        res.resolve({token: token, user: user.userRelevantData() });
+                        res.resolve({token: token, user: user.relevantData() });
                     },
                     function error(err) {
-                        res.applicationError();
+                        res.apiErrorResponse(err);
                     }
                 );
 
@@ -66,7 +67,7 @@ module.exports.login = (req, res) => {
         })
         .catch(err => {
             logger.error("Can't find User in DB for authentication. %o", err);
-            res.applicationError();
+            return res.apiErrorResponse(err);
         });
 
 };
@@ -86,7 +87,7 @@ module.exports.logout = (req, res) => {
         })
         .catch((err) => {
             logger.error("Fail at requesting/saving User from DB for logout. %o", err);
-            return res.applicationError();
+            return res.apiErrorResponse(err);
         })
 
 };
@@ -125,14 +126,14 @@ module.exports.restorePassword = (req, res) => {
 
             }).catch(err => {
                 logger.error(err);
-                res.applicationError();
+                return res.apiErrorResponse(err);
             })
 
 
         })
         .catch(err => {
             logger.error("Can't find reset password on DB. %o", err);
-            res.applicationError();
+            return res.apiErrorResponse(err);
         });
 
 };
@@ -156,8 +157,10 @@ module.exports.resetPassword = (req, res) => {
 
                 if(err) {
                     logger.error("Can't save password reset. %o", err);
-                    return res.applicationError;
+                    return res.apiErrorResponse(err);
                 }
+
+                logger.debug('New reset password asset, expiration %o', resetPassword.expirationDate);
 
                 const resetLink =
                     (process.env.ENV === 'DEVELOPING') ?
@@ -181,7 +184,7 @@ module.exports.resetPassword = (req, res) => {
         })
         .catch(err => {
             logger.error("Can't find User in DB for password reset. %o", err);
-            res.applicationError();
+            res.apiErrorResponse(err);
         });
 
 
@@ -225,7 +228,7 @@ module.exports.changePassword = (req, res) => {
 
     }).catch((err) => {
         logger.error("Can't request user for password change. %o", err);
-        return res.applicationError();
+        return res.apiErrorResponse(err);
     });
 
 

@@ -1,4 +1,3 @@
-const validator = require('validator');
 const Recipient = require('../models/recipient');
 const logger = require('../util/logger');
 
@@ -11,7 +10,7 @@ module.exports.find = (req, res) => {
         })
         .catch(err => {
             logger.error(err);
-            res.applicationError();
+            return res.apiErrorResponse(err);
         });
 };
 
@@ -23,16 +22,17 @@ module.exports.get = (req, res) => {
         })
         .catch(err => {
             logger.error(err);
-            res.applicationError();
+            return res.apiErrorResponse(err);
         });
 
 };
 
 module.exports.save = (req, res) => {
 
-    req.locals.asset.user = req.locals.user._id;
+    let recipient = new Recipient(req.body);
+    recipient.user = req.locals.user._id;
 
-    req.locals.asset.save((err, recipient) => {
+    recipient.save((err, recipient) => {
 
         if (err) {
             logger.error("Can't save asset to DB. %o", err);
@@ -64,7 +64,7 @@ module.exports.update = (req, res) => {
         })
         .catch(err => {
             logger.error(err);
-            res.applicationError();
+            return res.apiErrorResponse(err);
         });
 
 };
@@ -79,9 +79,9 @@ module.exports.delete = (req, res) => {
 
             return res.resolve();
         })
-        .catch((e) => {
-            logger.error(e);
-            return res.applicationError();
+        .catch((err) => {
+            logger.error(err);
+            return res.apiErrorResponse(err);
         });
 
 };

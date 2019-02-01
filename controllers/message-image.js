@@ -1,12 +1,16 @@
 const fileType      = require('file-type');
 const imageManager  = require('../util/image-manager');
+const logger        = require('../util/logger');
 
-module.exports.save = (req, res) => {
+module.exports.save = async (req, res) => {
 
     if(!req.files.file)
         return res.badRequest({
             file: i18n.__('MISSING_FILE')
         });
+
+    if(!req.locals.message)
+        return res.applicationError();
 
     const size = req.files.file.data.byteLength;
 
@@ -29,18 +33,30 @@ module.exports.save = (req, res) => {
         });
 
 
-    imageManager.save(req.files.file.data, 1, {}).then(
-        (response) => {
-            return res.resolve({
-                url: response.relativeRoute,
-                showName: req.files.file.name
-            });
-        }
-    ).catch(
-        (err) => {
-            console.log(err);
-        }
-    );
+    try {
+        const image = await imageManager.save(req.files.file.data, 1, {});
+
+        const attachment = {
+            id: image._id,
+            url: image.relativeRoute,
+            showName: req.files.file.name
+        };
+
+        req.locals.message.attachments.push(attachment);
+
+        await req.locals.message.save();
+
+        return res.resolve(attachment);
+    }
+    catch(err) {
+
+        logger.error(err);
+        return res.applicationError();
+    };
 
 
+};
+
+module.exports.delete = (req, res) => {
+    res.resolve();
 };

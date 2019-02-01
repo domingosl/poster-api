@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema(
             lowercase: true,
             trim: true,
             index: true,
-            unique: true,
+            unique: i18n.__('FORM_ERROR_EMAIL_IN_USE'),
             required: [true, i18n.__('FORM_ERROR_MISSING_EMAIL')],
             validate: [validator.isEmail, i18n.__('FORM_ERROR_INVALID_EMAIL')]
         },
@@ -94,12 +94,12 @@ const UserSchema = new mongoose.Schema(
 
 UserSchema.methods.getSession = function () {
     return {
-        user: this.userRelevantData(),
+        user: this.relevantData(),
         hashToken: this.hashToken
     }
 };
 
-UserSchema.methods.userRelevantData = function () {
+UserSchema.methods.relevantData = function () {
     return {
         id: this._id,
         email: this.email,
@@ -140,7 +140,7 @@ UserSchema.methods.refreshToken = function () {
 UserSchema.plugin(bcrypt);
 UserSchema.plugin(timestamps);
 UserSchema.plugin(mongooseStringQuery);
-UserSchema.plugin(uniqueValidator, {message: i18n.__('FORM_ERROR_EMAIL_IN_USE')});
+UserSchema.plugin(uniqueValidator);
 
 UserSchema.index({email: 1});
 

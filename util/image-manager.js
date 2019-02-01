@@ -12,11 +12,11 @@ if(!fs.existsSync(storageFolder)) {
 }
 
 const savePromise = (inputBuffer = null, storageType = 1, options = {}) => {
+
     return new Promise((resolve, reject) => {
 
         if(!inputBuffer)
             return reject('Missing data buffer');
-
 
         const image = sharp(inputBuffer);
         image.metadata()

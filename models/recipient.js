@@ -41,4 +41,4 @@ RecipientsSchema.plugin(timestamps);
 RecipientsSchema.plugin(mongooseStringQuery);
 
 
-module.exports = exports = mongoose.model('recipient', RecipientsSchema);
+module.exports = exports = mongoose.model('Recipient', RecipientsSchema);

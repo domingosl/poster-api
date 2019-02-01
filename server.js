@@ -17,7 +17,7 @@ const expressFileUpload = require('express-fileupload');
 
 
 const mainMiddleware = require('./middlewares/main');
-const validationMiddleware = require('./middlewares/validation');
+const pre = require('./middlewares/pre');
 
 const errorController = require('./controllers/error');
 
@@ -36,7 +36,8 @@ app.get('/favicon.ico', (req, res) => res.status(204));
 app.use(mainMiddleware);
 
 app.use(require('./util/auth'));
-app.use(validationMiddleware);
+
+app.use(pre);
 
 fs.readdirSync(`${appRoot}/routes`).map(file => {
     require('./routes/' + file)(app);

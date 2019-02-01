@@ -1,3 +1,6 @@
+const logger = require('../util/logger');
+
+
 module.exports = (req, res, next) => {
 
     if(!req.locals)
@@ -28,6 +31,15 @@ module.exports = (req, res, next) => {
     res.notFound = () => getForm(404, null, null);
     res.applicationError = () => getForm(500, null, null);
     res.tooManyRequests = (message) => getForm(429, null, message);
+
+    res.apiErrorResponse = (err) => {
+        if(err.name==='ValidationError')
+            return getForm(400, err.data);
+        else {
+            logger.error('Mongoose error.%o', err);
+            return getForm(500, null, null);
+        }
+    };
 
     next();
 };

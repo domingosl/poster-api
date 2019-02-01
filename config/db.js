@@ -1,10 +1,12 @@
 require('dotenv').config();
 
-const mongoose = require('mongoose');
-const logger = require('../util/logger');
-const process = require('process');
+const mongoose          = require('mongoose');
+const logger            = require('../util/logger');
+const mongooseApiError  = require('../util/mongoose-api-error-plugin');
+const process           = require('process');
 
 mongoose.Promise = global.Promise;
+mongoose.plugin(mongooseApiError);
 
 const connection = mongoose.connect(process.env.DB_SERVER, { useNewUrlParser: true });
 
